@@ -1,8 +1,21 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
+const UserBox = ({ user }) => {
+  console.log(user);
+  return (
+    <div style={{ border: "1px solid red" }}>
+      <p>{user.title}</p>
+      <p>
+        {user.firstName} {user.lastName}
+      </p>
+      <p>{user.id}</p>
+    </div>
+  );
+};
+
 export default function App() {
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   const [id, setId] = useState(1);
 
   const instance = axios.create({
@@ -17,10 +30,17 @@ export default function App() {
 
   const getData = async () => {
     const rosponse = await instance.get(`user`);
-    console.log(rosponse);
-    setData(rosponse.data);
+    setData(rosponse.data.data);
   };
 
+  const getDataById = async () => {
+    const rosponse = await instance.get(`user/${id}`);
+    setData([rosponse.data]);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
   // const postData = async () => {
   //   const rosponse = await instance.post("", {});
   //   console.log(rosponse);
@@ -38,28 +58,13 @@ export default function App() {
 
   return (
     <div>
-      <input type="number" onChange={(e) => setId(e.target.value)}></input>
-      <button onClick={getData}>Get</button>
-      <button onClick={postData}>Post</button>
-      <button onClick={deleteData}>Delete</button>
-      <button onClick={updateData}>Update</button>
-      {/* Hereglegchdin medeelel-g bugdin end haruulna
+      <input type="text" onChange={(e) => setId(e.target.value)}></input>
+      <button onClick={getDataById}>Get</button>
 
-      firstName
-      lastName
-      picture
-      title */}
-
-      {/* Hereglegch burtguuleh
-        firstName, lastName, email zaawal oruulna
-      */}
-
-      {/* Hereglegch update hiih
-        firstName, lastName
-      */}
-
-      {/* Hereglegch ustgah
-       */}
+      {data &&
+        data.map((user) => {
+          return <UserBox user={user} />;
+        })}
     </div>
   );
 }
